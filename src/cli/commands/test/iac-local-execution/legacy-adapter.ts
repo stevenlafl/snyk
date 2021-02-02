@@ -36,9 +36,9 @@ function iacLocalFileScanToLegacyResult(
   severityThreshold?: string,
 ) {
   const legacyIssues = iacFileScanResult.violatedPolicies.map((policy) => {
-    const cloudConfigPath = iacFileScanResult.docId
-      ? [`[DocId:${iacFileScanResult.docId}]`].concat(policy.msg.split('.'))
-      : policy.msg.split('.');
+    const cloudConfigPath = [`[DocId:${iacFileScanResult.docId}]`].concat(
+      policy.msg.split('.'),
+    );
     const lineNumber = -1;
     // TODO: once package becomes public, restore the commented out code for having the issue-to-line-number functionality
     // try {

@@ -70,7 +70,7 @@ async function parseFileContentsForPolicyEngine(
           ...fileMetadata,
           fileContent: fileContent,
           jsonContent: parsedYamlDocument,
-          docId: yamlDocuments.length > 1 ? docId : undefined,
+          docId,
         });
       } else {
         throw new Error('Invalid K8s File!');
