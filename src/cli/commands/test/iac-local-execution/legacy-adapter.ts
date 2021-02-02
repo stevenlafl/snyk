@@ -1,8 +1,8 @@
 import { IacFileScanResult, PolicyMetadata } from './types';
-import {
-  issuesToLineNumbers,
-  CloudConfigFileTypes,
-} from '@snyk/cloud-config-parser';
+// import {
+//   issuesToLineNumbers,
+//   CloudConfigFileTypes,
+// } from '@snyk/cloud-config-parser';
 
 export function transformToLegacyResults(
   iacLocalExecutionResults: Array<IacFileScanResult>,
@@ -16,19 +16,20 @@ export function transformToLegacyResults(
   );
 }
 
-function getLegacyFileTypeForLineNumber(
-  fileType: string,
-): CloudConfigFileTypes {
-  switch (fileType) {
-    case 'yaml':
-    case 'yml':
-      return CloudConfigFileTypes.YAML;
-    case 'json':
-      return CloudConfigFileTypes.JSON;
-    default:
-      return CloudConfigFileTypes.YAML;
-  }
-}
+//
+// function getLegacyFileTypeForLineNumber(
+//   fileType: string,
+// ): CloudConfigFileTypes {
+//   switch (fileType) {
+//     case 'yaml':
+//     case 'yml':
+//       return CloudConfigFileTypes.YAML;
+//     case 'json':
+//       return CloudConfigFileTypes.JSON;
+//     default:
+//       return CloudConfigFileTypes.YAML;
+//   }
+// }
 
 function iacLocalFileScanToLegacyResult(
   iacFileScanResult: IacFileScanResult,
@@ -38,16 +39,17 @@ function iacLocalFileScanToLegacyResult(
     const cloudConfigPath = iacFileScanResult.docId
       ? [`[DocId:${iacFileScanResult.docId}]`].concat(policy.msg.split('.'))
       : policy.msg.split('.');
-    let lineNumber = -1;
-    try {
-      lineNumber = issuesToLineNumbers(
-        iacFileScanResult.fileContent,
-        getLegacyFileTypeForLineNumber(iacFileScanResult.fileType),
-        cloudConfigPath,
-      );
-    } catch (err) {
-      //
-    }
+    const lineNumber = -1;
+    // TODO: once package becomes public, restore the commented out code for having the issue-to-line-number functionality
+    // try {
+    //   lineNumber = issuesToLineNumbers(
+    //     iacFileScanResult.fileContent,
+    //     getLegacyFileTypeForLineNumber(iacFileScanResult.fileType),
+    //     cloudConfigPath,
+    //   );
+    // } catch (err) {
+    //   //
+    // }
 
     return {
       ...policy,
