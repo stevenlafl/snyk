@@ -1,3 +1,4 @@
+import { SEVERITY } from '../../../../lib/snyk-test/common';
 import { IacFileInDirectory } from '../../../../lib/types';
 
 // eslint-disable-next-line
@@ -23,7 +24,7 @@ export interface PolicyMetadata {
   subType: string;
   title: string;
   description: string;
-  severity: string;
+  severity: SEVERITY;
   msg: string;
   policyEngineType: 'opa';
   issue: string;

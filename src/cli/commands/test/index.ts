@@ -51,7 +51,7 @@ import {
   getDisplayedOutput,
 } from './formatters/format-test-results';
 
-import iacLocalProcessing from './iac-local-execution';
+import * as iacLocalProcessing from './iac-local-execution';
 
 const debug = Debug('snyk-test');
 const SEPARATOR = '\n-------------------------------------------------------\n';
@@ -136,7 +136,9 @@ async function test(...args: MethodArgs): Promise<TestCommandResult> {
 
     try {
       if (options.iac && options.experimental) {
-        res = await iacLocalProcessing(path, options);
+        // this path is an experimental feature feature for IaC which does issue scanning locally without sending files to our Backend servers.
+        // once ready for GA, it is aimed to deprecate our remote-processing model, so IaC file scanning in the CLI is done locally.
+        res = await iacLocalProcessing.test(path, options);
       } else {
         res = await snyk.test(path, testOpts);
       }

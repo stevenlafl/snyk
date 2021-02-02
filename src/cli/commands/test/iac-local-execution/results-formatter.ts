@@ -1,23 +1,24 @@
 import { IacFileScanResult, PolicyMetadata } from './types';
+import { SEVERITY } from '../../../../lib/snyk-test/common';
 // import {
 //   issuesToLineNumbers,
 //   CloudConfigFileTypes,
 // } from '@snyk/cloud-config-parser';
 
-export function transformToLegacyResults(
+export function formatResults(
   iacLocalExecutionResults: Array<IacFileScanResult>,
-  options: { severityThreshold?: string },
+  options: { severityThreshold?: SEVERITY },
 ) {
   const iacLocalExecutionGroupedResults = groupMultiDocResults(
     iacLocalExecutionResults,
   );
   return iacLocalExecutionGroupedResults.map((iacScanResult) =>
-    iacLocalFileScanToLegacyResult(iacScanResult, options.severityThreshold),
+    iacLocalFileScanToFormattedResult(iacScanResult, options.severityThreshold),
   );
 }
 
 //
-// function getLegacyFileTypeForLineNumber(
+// function getFileTypeForLineNumber(
 //   fileType: string,
 // ): CloudConfigFileTypes {
 //   switch (fileType) {
@@ -31,11 +32,11 @@ export function transformToLegacyResults(
 //   }
 // }
 
-function iacLocalFileScanToLegacyResult(
+function iacLocalFileScanToFormattedResult(
   iacFileScanResult: IacFileScanResult,
-  severityThreshold?: string,
+  severityThreshold?: SEVERITY,
 ) {
-  const legacyIssues = iacFileScanResult.violatedPolicies.map((policy) => {
+  const formattedIssues = iacFileScanResult.violatedPolicies.map((policy) => {
     const cloudConfigPath = [`[DocId:${iacFileScanResult.docId}]`].concat(
       policy.msg.split('.'),
     );
@@ -44,7 +45,7 @@ function iacLocalFileScanToLegacyResult(
     // try {
     //   lineNumber = issuesToLineNumbers(
     //     iacFileScanResult.fileContent,
-    //     getLegacyFileTypeForLineNumber(iacFileScanResult.fileType),
+    //     getFileTypeForLineNumber(iacFileScanResult.fileType),
     //     cloudConfigPath,
     //   );
     // } catch (err) {
@@ -70,10 +71,11 @@ function iacLocalFileScanToLegacyResult(
   return {
     result: {
       cloudConfigResults: filterPoliciesBySeverity(
-        legacyIssues,
+        formattedIssues,
         severityThreshold,
       ),
     },
+    isPrivate: true,
     packageManager: 'k8sconfig',
     targetFile: iacFileScanResult.filePath,
   };
@@ -94,16 +96,16 @@ function groupMultiDocResults(
     return memo;
   }, {} as IacFileScanResult);
 
-  return Object.keys(groupedData).map((k) => groupedData[k]);
+  return Object.values(groupedData);
 }
 
-const SEVERITIES = ['low', 'medium', 'high'];
+const SEVERITIES = [SEVERITY.LOW, SEVERITY.MEDIUM, SEVERITY.HIGH];
 
 function filterPoliciesBySeverity(
   violatedPolicies: PolicyMetadata[],
-  severityThreshold?: string,
+  severityThreshold?: SEVERITY,
 ): PolicyMetadata[] {
-  if (!severityThreshold || severityThreshold === SEVERITIES[0]) {
+  if (!severityThreshold || severityThreshold === SEVERITY.LOW) {
     return violatedPolicies;
   }
 
@@ -111,7 +113,7 @@ function filterPoliciesBySeverity(
     SEVERITIES.indexOf(severityThreshold),
   );
 
-  return violatedPolicies.filter(
-    (policy) => severitiesToInclude.indexOf(policy.severity) > -1,
+  return violatedPolicies.filter((policy) =>
+    severitiesToInclude.includes(policy.severity),
   );
 }

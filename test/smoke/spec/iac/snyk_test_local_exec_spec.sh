@@ -29,7 +29,7 @@ Describe "Snyk iac test --experimental command"
     It "outputs an error for files with no valid k8s objects"
       When run snyk iac test ../fixtures/iac/kubernetes/pod-invalid.yaml --experimental
       The status should be failure
-      The output should include "Illegal infrastructure as code target file pod-invalid.yaml"
+      The output should include "Invalid K8s File!"
     End
 
     It "outputs the expected text when running with --sarif flag"

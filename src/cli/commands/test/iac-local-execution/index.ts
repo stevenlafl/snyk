@@ -6,16 +6,20 @@ import * as util from 'util';
 import { IacFileTypes } from '../../../../lib/iac/constants';
 import { IacFileScanResult, IacFileMetadata, IacFileData } from './types';
 import { buildPolicyEngine } from './policy-engine';
-import { transformToLegacyResults } from './legacy-adapter';
+import { formatResults } from './results-formatter';
 
 const readFileContentsAsync = util.promisify(fs.readFile);
 
-export default async function legacyWrapper(pathToScan: string, options) {
+// this method executes the local processing engine and then formats the results to adapt with the CLI output.
+// the current version is dependant on files to be present locally which are not part of the source code.
+// without these files this method would fail.
+// if you're interested in trying out the experimnetal local execution model for IaC scanning, please reach-out.
+export async function test(pathToScan: string, options) {
   const results = await localProcessing(pathToScan);
-  const legacyResults = transformToLegacyResults(results, options);
-  const singleFileLegacyResult = legacyResults[0];
+  const formattedResults = formatResults(results, options);
+  const singleFileFprmattedResult = formattedResults[0];
 
-  return singleFileLegacyResult as any;
+  return singleFileFprmattedResult as any;
 }
 
 async function localProcessing(
@@ -78,5 +82,5 @@ async function parseFileContentsForPolicyEngine(
     });
   }
 
-  return await Promise.all(parsedFileData);
+  return parsedFileData;
 }

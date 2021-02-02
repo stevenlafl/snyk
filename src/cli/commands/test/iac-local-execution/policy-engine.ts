@@ -30,7 +30,7 @@ export async function buildPolicyEngine(): Promise<PolicyEngine> {
 }
 
 class PolicyEngine {
-  opaWasmInstance: OpaWasmInstance;
+  private opaWasmInstance: OpaWasmInstance;
 
   constructor(opaWasmInstance: OpaWasmInstance) {
     this.opaWasmInstance = opaWasmInstance;
@@ -52,6 +52,7 @@ class PolicyEngine {
         };
       });
     } catch (err) {
+      // TODO: to distinguish between different failure reasons
       throw new Error(`Failed to run policy engine: ${err}`);
     }
   }
